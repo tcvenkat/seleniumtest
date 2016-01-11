@@ -1,0 +1,4 @@
+*.gz
+target
+*.zip
+sc*

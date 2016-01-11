@@ -1,0 +1,27 @@
+machine:
+  pre:
+    - curl -O http://apache.osuosl.org/maven/maven-3/3.1.1/binaries/apache-maven-3.1.1-bin.tar.gz && tar xvf apache-maven-3.1.1-bin.tar.gz -C ~/.m2
+  environment:
+    PATH: $HOME/.m2/apache-maven-3.1.1/bin:$PATH
+    M2_HOME: $HOME/.m2/apache-maven-3.1.1/
+    M2: $HOME/.m2/apache-maven-3.1.1/bin/
+
+dependencies:
+  pre:
+    - mvn install -f pom.xml -Dmaven.test.skip=true
+  post:
+    - wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
+    - tar -xzf sc-latest-linux.tar.gz
+
+test:
+  override:
+    - mvn verify
+    
+test:
+  override:
+    - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY:
+        background: true
+    - mvn test:
+        background: true
+    - sleep 60
+    - nosetests

@@ -9,7 +9,17 @@ machine:
 dependencies:
   pre:
     - mvn install -f pom.xml -Dmaven.test.skip=true
+  post:
+    - wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
+    - tar -xzf sc-latest-linux.tar.gz
 
 test:
   override:
     - mvn verify
+    
+test:
+  override:
+    - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY
+    - mvn test
+    - sleep 60
+    - nosetests
